@@ -114,6 +114,16 @@ EnderecoIntegrator.resolvers.subdivisionCodeRead = function (value, subscriber) 
     });
 }
 
+EnderecoIntegrator.resolvers.subdivisionCodeGetValue = function(subscriber) {
+    let value;
+    if (subscriber?.object?.type === 'select-one' && subscriber?.object?.options?.length === 1) {
+        value = subscriber.object.dataset?.initialCountryStateId ?? '';
+        return value
+    }
+    value = subscriber.getValue();
+    return value
+}
+
 EnderecoIntegrator.resolvers.salutationWrite = function (value) {
     return new Promise(function (resolve, reject) {
         var key = window.EnderecoIntegrator.salutationMapping[value];
