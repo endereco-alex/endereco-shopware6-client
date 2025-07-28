@@ -8,6 +8,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 final class AddressExtensionExistsInsurance implements IntegrityInsurance
@@ -38,7 +39,10 @@ final class AddressExtensionExistsInsurance implements IntegrityInsurance
             return;
         }
 
-        $persistedAddressExtension = $this->addressExtensionRepository->search(new Criteria([$addressEntity->getId()]), $context)->first();
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('addressId', $addressEntity->getId()));
+        $criteria->addFilter(new EqualsFilter('addressVersionId', $addressEntity->getVersionId()));
+        $persistedAddressExtension = $this->addressExtensionRepository->search($criteria, $context)->first();
         if ($persistedAddressExtension instanceof EnderecoOrderAddressExtensionEntity) {
             $addressEntity->addExtension(OrderAddressExtension::ENDERECO_EXTENSION, $persistedAddressExtension);
 
