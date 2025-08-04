@@ -79,10 +79,7 @@ final class AddressExtensionExistsInsurance implements IntegrityInsurance
     protected function createAddressExtensionWithDefaultValues(
         CustomerAddressEntity $addressEntity
     ): EnderecoCustomerAddressExtensionEntity {
-        $addressExtension = new EnderecoCustomerAddressExtensionEntity();
-        $addressExtension->setAddressId($addressEntity->getId());
-        $addressExtension->setAddress($addressEntity);
-        return $addressExtension;
+        return EnderecoCustomerAddressExtensionEntity::createWithDefaultValues($addressEntity);
     }
 
     /**

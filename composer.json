@@ -39,7 +39,8 @@
         "phpunit/phpunit": "12.3.*",
         "phpstan/phpstan": "^1.10",
         "brainmaestro/composer-git-hooks": "^2.8",
-        "phpmd/phpmd": "^2.10"
+        "phpmd/phpmd": "^2.10",
+        "spaze/phpstan-disallowed-calls": "^4.6"
     },
     "scripts": {
         "qa": [
