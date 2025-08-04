@@ -64,7 +64,7 @@
             "phpstan analyse -c phpstan.6.5.5.2.neon  --memory-limit=-1",
             "phpstan analyse -c phpstan.6.5.6.1.neon  --memory-limit=-1",
             "phpstan analyse -c phpstan.6.5.7.4.neon --memory-limit=-1",
-            "phpstan analyse -c phpstan.6.5.8.15.neon  --memory-limit=-1"
+            "phpstan analyse -c phpstan.6.5.8.17.neon  --memory-limit=-1"
         ],
         "phpmd": "./check_phpmd.sh",
         "phpcompat": "./test_php_versions.sh",
