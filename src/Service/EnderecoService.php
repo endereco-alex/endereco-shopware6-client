@@ -63,9 +63,9 @@ class EnderecoService
     protected RequestStack $requestStack;
 
     /**
-     * @param EntityRepository<CountryStateCollection> $countryStateRepository
-     * @param EntityRepository<CustomerAddressCollection> $customerAddressRepository
-     * @param EntityRepository<OrderAddressCollection> $orderAddressRepository
+     * @param EntityRepository $countryStateRepository
+     * @param EntityRepository $customerAddressRepository
+     * @param EntityRepository $orderAddressRepository
      */
     public function __construct(
         SystemConfigService $systemConfigService,
@@ -157,7 +157,7 @@ class EnderecoService
             'id' => $addressId,
         ];
 
-        $addressExtension = new EnderecoCustomerAddressExtensionEntity();
+        $addressExtension = EnderecoCustomerAddressExtensionEntity::createWithDefaultValues($addressEntity);
         $addressEntity->addExtension(CustomerAddressExtension::ENDERECO_EXTENSION, $addressExtension);
 
         $updatePayload['extensions'][CustomerAddressExtension::ENDERECO_EXTENSION]['amsRequestPayload']
@@ -300,7 +300,7 @@ class EnderecoService
             $addressExtension = $addressEntity->getExtension(CustomerAddressExtension::ENDERECO_EXTENSION);
 
             if (is_null($addressExtension)) {
-                $addressExtension = new EnderecoCustomerAddressExtensionEntity();
+                $addressExtension = EnderecoCustomerAddressExtensionEntity::createWithDefaultValues($addressEntity);
                 $addressEntity->addExtension(CustomerAddressExtension::ENDERECO_EXTENSION, $addressExtension);
             }
 
@@ -366,7 +366,7 @@ class EnderecoService
             /** @var EnderecoCustomerAddressExtensionEntity|null $addressExtension */
             $addressExtension = $addressEntity->getExtension(CustomerAddressExtension::ENDERECO_EXTENSION);
             if (is_null($addressExtension)) {
-                $addressExtension = new EnderecoCustomerAddressExtensionEntity();
+                $addressExtension = EnderecoCustomerAddressExtensionEntity::createWithDefaultValues($addressEntity);
                 $addressEntity->addExtension(CustomerAddressExtension::ENDERECO_EXTENSION, $addressExtension);
             }
 
@@ -388,7 +388,7 @@ class EnderecoService
             /** @var EnderecoCustomerAddressExtensionEntity|null $addressExtension */
             $addressExtension = $addressEntity->getExtension(CustomerAddressExtension::ENDERECO_EXTENSION);
             if (is_null($addressExtension)) {
-                $addressExtension = new EnderecoCustomerAddressExtensionEntity();
+                $addressExtension = EnderecoCustomerAddressExtensionEntity::createWithDefaultValues($addressEntity);
                 $addressEntity->addExtension(CustomerAddressExtension::ENDERECO_EXTENSION, $addressExtension);
             }
 
