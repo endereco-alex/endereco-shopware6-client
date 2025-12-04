@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # List of supported Shopware versions
-declare -a versions=("6.7.0.1" "6.7.1.2" "6.7.2.2" "6.7.3.1" "6.7.4.2")
+declare -a versions=("6.7.0.1" "6.7.1.2" "6.7.2.2" "6.7.3.1" "6.7.4.2" "6.7.5.0")
 
 # Function to determine which dockware image to use based on version
 get_dockware_image() {
