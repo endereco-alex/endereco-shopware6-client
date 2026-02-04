@@ -100,7 +100,7 @@ class AddressController extends StorefrontController
             throw new Exception('Something is wrong with the sales channel');
         }
 
-        /** @var \Symfony\Component\HttpFoundation\InputBag $requestInputBag */
+        /** @var \Symfony\Component\HttpFoundation\InputBag<string> $requestInputBag */
         $requestInputBag = $request->request;
 
         // Recognize and store accountable session IDs at the beginning of the address save process
