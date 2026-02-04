@@ -62,8 +62,8 @@ EnderecoIntegrator.resolvers.subdivisionCodeSetValue = (subscriber, value) => {
     }
 }
 
-EnderecoIntegrator.resolvers.countryCodeWrite = function (value, subscriber) {
-    return new Promise(function (resolve, reject) {
+EnderecoIntegrator.resolvers.countryCodeWrite = function (value, _subscriber) {
+    return new Promise(function (resolve, _reject) {
         var key = window.EnderecoIntegrator.countryMapping[value.toUpperCase()];
         if (key !== undefined) {
             resolve(window.EnderecoIntegrator.countryMapping[value.toUpperCase()]);
@@ -77,7 +77,7 @@ EnderecoIntegrator.resolvers.countryCodeRead = function (value, subscriber) {
     if (subscriber?.object?.options?.length === 1) {
         value = subscriber.object.dataset?.initialCountryId ?? value;
     }
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, _reject) {
         const key = window.EnderecoIntegrator.countryMappingReverse?.[value];
         if (key !== undefined) {
             resolve(key);
@@ -87,8 +87,8 @@ EnderecoIntegrator.resolvers.countryCodeRead = function (value, subscriber) {
     });
 }
 
-EnderecoIntegrator.resolvers.subdivisionCodeWrite = function (value, subscriber) {
-    return new Promise(function (resolve, reject) {
+EnderecoIntegrator.resolvers.subdivisionCodeWrite = function (value, _subscriber) {
+    return new Promise(function (resolve, _reject) {
         var key = window.EnderecoIntegrator.subdivisionMapping[value.toUpperCase()];
         if (key !== undefined) {
             resolve(window.EnderecoIntegrator.subdivisionMapping[value.toUpperCase()]);
@@ -98,8 +98,8 @@ EnderecoIntegrator.resolvers.subdivisionCodeWrite = function (value, subscriber)
     });
 }
 
-EnderecoIntegrator.resolvers.subdivisionCodeRead = function (value, subscriber) {
-    return new Promise(function (resolve, reject) {
+EnderecoIntegrator.resolvers.subdivisionCodeRead = function (value, _subscriber) {
+    return new Promise(function (resolve, _reject) {
         const key = window.EnderecoIntegrator.subdivisionMappingReverse?.[value];
         if (key !== undefined) {
             resolve(key);
@@ -120,7 +120,7 @@ EnderecoIntegrator.resolvers.subdivisionCodeGetValue = function(subscriber) {
 }
 
 EnderecoIntegrator.resolvers.salutationWrite = function (value) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, _reject) {
         var key = window.EnderecoIntegrator.salutationMapping[value];
         if (key !== undefined) {
             resolve(window.EnderecoIntegrator.salutationMapping[value]);
@@ -131,7 +131,7 @@ EnderecoIntegrator.resolvers.salutationWrite = function (value) {
 }
 
 EnderecoIntegrator.resolvers.salutationRead = function (value) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, _reject) {
         var key = window.EnderecoIntegrator.salutationMappingReverse[value];
         if (key !== undefined) {
             resolve(window.EnderecoIntegrator.salutationMappingReverse[value]);

@@ -49,12 +49,14 @@
     "scripts": {
         "qa": [
             "@phpcs",
+            "@eslint",
             "@phpmd",
             "@phpstan",
             "@phpcompat",
             "@phpcheckimports",
             "@test"
         ],
+        "eslint": "npm run lint",
         "test": "phpunit",
         "test-unit": "phpunit --testsuite=unit",
         "test-integration": "phpunit --testsuite=integration",
