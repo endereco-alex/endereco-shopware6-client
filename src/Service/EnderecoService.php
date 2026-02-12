@@ -6,6 +6,7 @@ namespace Endereco\Shopware6Client\Service;
 
 use Endereco\Shopware6Client\DTO\CustomerAddressDTO;
 use Endereco\Shopware6Client\Entity\CustomerAddress\CustomerAddressExtension;
+use Endereco\Shopware6Client\Entity\EnderecoAddressExtension\EnderecoBaseAddressExtensionEntity;
 use Endereco\Shopware6Client\Entity\EnderecoAddressExtension\CustomerAddress\EnderecoCustomerAddressExtensionEntity;
 use Endereco\Shopware6Client\Entity\EnderecoAddressExtension\OrderAddress\EnderecoOrderAddressExtensionEntity;
 use Endereco\Shopware6Client\Entity\OrderAddress\OrderAddressExtension;
@@ -439,6 +440,14 @@ class EnderecoService
         $isFullStreetEmpty = empty($addressData['street']);
         $isStreetNameEmpty = empty($addressData['extensions'][$extensionName]['street']);
 
+        // If the user explicitly confirmed the original address, do not overwrite additionalAddressLine
+        // with data from the splitStreet API (e.g. "Nr." being extracted as additionalInfo).
+        $amsStatus = $addressData['extensions'][$extensionName]['amsStatus'] ?? '';
+        $isAddressSelectedByCustomer = str_contains(
+            $amsStatus,
+            EnderecoBaseAddressExtensionEntity::AMS_STATUS_SELECTED_BY_CUSTOMER
+        );
+
         // Create payload objects for normalized updates
         $customerAddressPayload = new CustomerAddressUpdatePayload('sync_street');
         $extensionData = new EnderecoExtensionData();
@@ -498,6 +507,16 @@ class EnderecoService
                 $context,
                 $salesChannelId
             );
+
+            // If the user confirmed the address, only populate extension fields
+            // and skip overwriting street/additionalAddressLine to prevent the API
+            // from stripping parts like "Nr." into additionalInfo.
+            if ($isAddressSelectedByCustomer) {
+                $extensionData->setStreet($streetSplitResult->getStreetName());
+                $extensionData->setHouseNumber($streetSplitResult->getBuildingNumber());
+                $this->extensionArrayUpdater->updateFromExtensionPayload($extensionData, $addressData);
+                return;
+            }
 
             // Set split results in payload objects
             $customerAddressPayload->setStreet($streetSplitResult->getFullStreet());
@@ -567,6 +586,16 @@ class EnderecoService
                     $context,
                     $salesChannelId
                 );
+
+                // If the user confirmed the address, only populate extension fields
+                // and skip overwriting street/additionalAddressLine to prevent the API
+                // from stripping parts like "Nr." into additionalInfo.
+                if ($isAddressSelectedByCustomer) {
+                    $extensionData->setStreet($splitStreetResult->getStreetName());
+                    $extensionData->setHouseNumber($splitStreetResult->getBuildingNumber());
+                    $this->extensionArrayUpdater->updateFromExtensionPayload($extensionData, $addressData);
+                    return;
+                }
 
                 // Set split results in payload objects
                 $customerAddressPayload->setStreet($splitStreetResult->getFullStreet());
