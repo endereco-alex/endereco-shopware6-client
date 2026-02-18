@@ -63,7 +63,9 @@ final class PayPalExpressFlagIsSetInsurance implements IntegrityInsurance
 
         $customer = $this->getCustomer($addressEntity->getCustomerId(), $context);
         $flagValue = $this->checkIfFromPayPal($customer);
-        $this->persistFlagValue($addressExtension, $flagValue, $context);
+        if ($addressExtension->isPayPalAddress() !== $flagValue) {
+            $this->persistFlagValue($addressExtension, $flagValue, $context);
+        }
         $this->setFlagInExtension($addressExtension, $flagValue);
     }
 
