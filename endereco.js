@@ -141,6 +141,17 @@ EnderecoIntegrator.resolvers.salutationRead = function (value) {
     });
 }
 
+EnderecoIntegrator.resolvers.targetSelectorResolve = (targetSelector, addressObject) => {
+    const form = addressObject.forms[0];
+    if (!form) {
+        return targetSelector;
+    }
+    const attrName = 'data-endereco-ams-form-id';
+    const attrValue = form.getAttribute(attrName);
+
+    return `form[${attrName}="${attrValue}"]`;
+};
+
 const originalHasActiveSubscriber = EnderecoIntegrator.hasActiveSubscriber;
 EnderecoIntegrator.hasActiveSubscriber = (fieldName, domElement, dataObject) => {
     if (fieldName === 'subdivisionCode' &&
