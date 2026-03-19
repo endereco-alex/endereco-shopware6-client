@@ -12,6 +12,7 @@ use Endereco\Shopware6Client\Service\AddressCheck\CountryCodeFetcherInterface;
 use Endereco\Shopware6Client\Service\AddressIntegrity\CustomerAddressIntegrityInsuranceInterface;
 use Endereco\Shopware6Client\Service\EnderecoService;
 use Endereco\Shopware6Client\Service\PluginStatusService;
+use Endereco\Shopware6Client\Service\PredictionSerializer;
 use Endereco\Shopware6Client\Service\ProcessContextService;
 use Endereco\Shopware6Client\Service\SessionManagementService;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressCollection;
@@ -77,6 +78,7 @@ class CustomerAddressSubscriber implements EventSubscriberInterface
     private AddressCheckPayloadBuilderInterface $addressCheckPayloadBuilder;
 
     private ProcessContextService $processContext;
+    private PredictionSerializer $predictionSerializer;
 
     /**
      * @param EntityRepository<CustomerCollection> $customerRepository
@@ -99,7 +101,8 @@ class CustomerAddressSubscriber implements EventSubscriberInterface
         CountryCodeFetcherInterface $countryCodeFetcher,
         CustomerAddressIntegrityInsuranceInterface $customerAddressIntegrityInsurance,
         RequestStack $requestStack,
-        PluginStatusService $pluginStatusService
+        PluginStatusService $pluginStatusService,
+        PredictionSerializer $predictionSerializer
     ) {
         $this->processContext = $processContext;
         $this->addressCheckPayloadBuilder = $addressCheckPayloadBuilder;
@@ -115,6 +118,7 @@ class CustomerAddressSubscriber implements EventSubscriberInterface
         $this->customerAddressIntegrityInsurance = $customerAddressIntegrityInsurance;
         $this->requestStack = $requestStack;
         $this->pluginStatusService = $pluginStatusService;
+        $this->predictionSerializer = $predictionSerializer;
     }
 
     /**
@@ -419,7 +423,7 @@ class CustomerAddressSubscriber implements EventSubscriberInterface
         if (is_null($input->get('amsPredictions'))) {
             $predictions = [];
         } else {
-            $predictions = json_decode($input->get('amsPredictions'), true) ?? [];
+            $predictions = $this->predictionSerializer->decode($input->get('amsPredictions'));
         }
 
         // Initialize extensions array if it does not exist or is not an array, to avoid
