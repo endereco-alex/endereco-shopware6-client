@@ -228,7 +228,7 @@ abstract class EnderecoBaseAddressExtensionEntity extends Entity
      */
     public function getHouseNumber(): string
     {
-        return $this->houseNumber ?? '';
+        return $this->houseNumber;
     }
 
     /**
