@@ -1,5 +1,7 @@
 #!/bin/bash
 
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # List of supported Shopware versions
 declare -a versions=("6.7.0.1" "6.7.1.2" "6.7.2.2" "6.7.3.1" "6.7.4.2" "6.7.5.1" "6.7.6.2" "6.7.7.1" "6.7.8.2" "6.7.9.1")
 
@@ -46,8 +48,14 @@ if containsElement "$version" "${versions[@]}"; then
     dockware_image=$(get_dockware_image "$version")
     echo "Using Docker image: $dockware_image:$version"
 
-    # Prepare Docker run options (no volume mount - we'll copy files instead)
+    # Prepare Docker run options.
+    # Plugin source is mounted read-only at /opt/endereco-src (a path Dockware's
+    # entrypoint never touches), then symlinked into the plugin directory after
+    # startup so the entrypoint's chown sweep over /var/www/html can't touch
+    # our host files.
     docker_options="-d --name shopware-$version -p 80:80"
+    docker_options="$docker_options -v $SCRIPT_DIR/src:/opt/endereco-src/src:ro"
+    docker_options="$docker_options -v $SCRIPT_DIR/composer.json:/opt/endereco-src/composer.json:ro"
 
     # Add XDebug options if requested
     if [[ "$enable_xdebug" =~ ^[Yy]$ ]]; then
@@ -74,17 +82,14 @@ if containsElement "$version" "${versions[@]}"; then
     done
     echo ""
 
-    echo "Container is ready! Copying plugin files..."
+    echo "Container is ready! Linking plugin into container..."
 
-    # Copy plugin files to container (excluding vendor, node_modules, shops, .git)
-    docker exec shopware-$version mkdir -p /var/www/html/custom/plugins/EnderecoShopware6Client
-    docker cp ./src shopware-$version:/var/www/html/custom/plugins/EnderecoShopware6Client/
-    docker cp ./composer.json shopware-$version:/var/www/html/custom/plugins/EnderecoShopware6Client/
+    docker exec -u root shopware-$version mkdir -p /var/www/html/custom/plugins
+    docker exec -u root shopware-$version rm -rf /var/www/html/custom/plugins/EnderecoShopware6Client
+    docker exec -u root shopware-$version ln -s /opt/endereco-src /var/www/html/custom/plugins/EnderecoShopware6Client
+    docker exec -u root shopware-$version chown -h www-data:www-data /var/www/html/custom/plugins/EnderecoShopware6Client
 
-    # Set correct ownership inside container
-    docker exec -u root shopware-$version chown -R www-data:www-data /var/www/html/custom/plugins/EnderecoShopware6Client
-
-    echo "Plugin files copied. Shopware 6 is available at http://localhost"
+    echo "Plugin linked. Shopware 6 is available at http://localhost"
 
     if [[ "$enable_xdebug" =~ ^[Yy]$ ]]; then
         echo "XDebug is enabled and ready for debugging"
