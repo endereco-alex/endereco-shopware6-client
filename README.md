@@ -110,7 +110,7 @@ This repository includes several shell scripts and PHP utilities to assist with 
 #### `fetch_shops.sh`
 Downloads and sets up different Shopware 6 versions for testing and development.
 
-**Description:** Automatically downloads Shopware production releases (6.7.0.1, 6.7.1.2, 6.7.2.2, ..., 6.7.10.0) from GitHub and extracts them into the `shops/` directory.
+**Description:** Automatically downloads Shopware production releases (6.7.0.1, 6.7.1.2, 6.7.2.2, ..., 6.7.10.1) from GitHub and extracts them into the `shops/` directory.
 
 **Usage:**
 ```bash
