@@ -6,7 +6,7 @@ autocomplete, email verification, and more for improved customer data quality.
 ## Requirements
 
 - Shopware 6.7.0.1 or higher
-- PHP 8.2 or higher (PHP 8.4 supported)
+- PHP 8.2 or higher (PHP 8.4 and 8.5 supported)
 - Composer (for development)
 - Node.js and npm (for development)
 
@@ -158,7 +158,7 @@ Requires Docker to be running. The script automatically manages container lifecy
 #### `test_php_versions.sh`
 Tests PHP syntax compatibility across multiple PHP versions.
 
-**Description:** Checks all PHP files in the project (excluding vendor, node_modules, and shops) against PHP 8.2, 8.3, and 8.4 using Docker images to ensure compatibility.
+**Description:** Checks all PHP files in the project (excluding vendor, node_modules, and shops) against PHP 8.2, 8.3, 8.4, and 8.5 using Docker images to ensure compatibility.
 
 **Usage:**
 ```bash
