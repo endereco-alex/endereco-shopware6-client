@@ -5,15 +5,3 @@ parameters:
 			identifier: shopware.forbidLocalDiskWrite
 			count: 2
 			path: src/Installer/PluginLifecycle.php
-
-		-
-			message: '#^Property Endereco\\Shopware6Client\\Struct\\OrderCustomFields\:\:\$billingAddressValidationData on left side of \?\? is not nullable nor uninitialized\.$#'
-			identifier: nullCoalesce.initializedProperty
-			count: 1
-			path: src/Struct/OrderCustomFields.php
-
-		-
-			message: '#^Property Endereco\\Shopware6Client\\Struct\\OrderCustomFields\:\:\$shippingAddressValidationData on left side of \?\? is not nullable nor uninitialized\.$#'
-			identifier: nullCoalesce.initializedProperty
-			count: 1
-			path: src/Struct/OrderCustomFields.php
