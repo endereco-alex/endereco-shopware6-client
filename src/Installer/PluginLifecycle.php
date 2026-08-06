@@ -8,7 +8,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Endereco\Shopware6Client\Entity\EnderecoAddressExtension\CustomerAddress\EnderecoCustomerAddressExtensionDefinition;
 use Endereco\Shopware6Client\Entity\EnderecoAddressExtension\OrderAddress\EnderecoOrderAddressExtensionDefinition;
-use Endereco\Shopware6Client\Struct\OrderCustomFields;
+use Endereco\Shopware6Client\Model\OrderCustomFieldsKeys;
 use RuntimeException;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -75,7 +75,7 @@ class PluginLifecycle
         }
 
         // The custom fields to be dropped from the `Order` entity during uninstallation
-        $dropOrderCustomFields = OrderCustomFields::FIELDS;
+        $dropOrderCustomFields = OrderCustomFieldsKeys::FIELDS;
 
         // Drop each of the specified custom fields in the order table
         foreach ($dropOrderCustomFields as $dropOrderCustomField) {
