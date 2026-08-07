@@ -383,18 +383,22 @@ class CustomerAddressSubscriber implements EventSubscriberInterface
      * @param DataBag $address The data bag object containing address information.
      *
      * @return bool Returns true if 'enderecoStreet' exists in the chosen address, false otherwise.
+     *              Also returns false if the chosen address is not a data bag at all.
      */
     private function isStreetSplittingFieldsValidationNeeded(DataBag $address): bool
     {
         if ($address->has('billingAddress')) {
-            $address =  $address->get('billingAddress');
+            $address = $address->get('billingAddress');
         } elseif ($address->has('shippingAddress')) {
-            $address =  $address->get('billingAddress');
+            $address = $address->get('shippingAddress');
         }
 
-        $validationCustomRulesNeeded = $address->has('enderecoStreet');
+        // The submitted value is not guaranteed to be a data bag, since the store-api accepts arbitrary payloads.
+        if (!$address instanceof DataBag) {
+            return false;
+        }
 
-        return $validationCustomRulesNeeded;
+        return $address->has('enderecoStreet');
     }
 
     /**
