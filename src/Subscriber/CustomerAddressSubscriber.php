@@ -26,6 +26,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Storefront\Event\StorefrontRenderEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -450,7 +451,7 @@ class CustomerAddressSubscriber implements EventSubscriberInterface
      * If validation fails for some reason and the user is returned to the original form, then the session id for
      * endereco service is generated a new. Is the second submit successsfull, then the first session id is lost.
      * With this method we try to save the session id (if its relevant), so we can do doaccounting later.
-     * Delayed doaccounting can be also used for other serverside checks, that dont rely on $_POST variable.
+     * Delayed doaccounting can be also used for other serverside checks, that dont rely on the request payload.
      *
      * We don't send doAccounting at this point. It will actually happen after the address is saved.
      *
@@ -461,16 +462,14 @@ class CustomerAddressSubscriber implements EventSubscriberInterface
      */
     public function saveAccountableSessionForLater(BuildValidationEvent $event)
     {
-        $isPostRequest =
-            is_array($_SERVER)
-            && array_key_exists('REQUEST_METHOD', $_SERVER)
-            && 'POST' === $_SERVER['REQUEST_METHOD']
-            && $_POST;
+        $request = $this->requestStack->getCurrentRequest();
+        if (!$request instanceof Request) {
+            return;
+        }
 
-        if ($isPostRequest) {
-            // Look for accountable session id's in $_POST
-            $accountableSessionIds = $this->enderecoService->findAccountableSessionIds($_POST);
-
+        if ($request->getRealMethod() === 'POST') {
+            // Look for accountable session id's in the request payload (form-encoded or JSON)
+            $accountableSessionIds = $this->enderecoService->findAccountableSessionIds($request->getPayload()->all());
 
             // Save them to session variable, if any found.
             if (!empty($accountableSessionIds)) {
