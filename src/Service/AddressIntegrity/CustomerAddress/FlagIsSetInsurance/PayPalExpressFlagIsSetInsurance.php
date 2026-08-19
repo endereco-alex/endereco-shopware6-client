@@ -7,6 +7,7 @@ use Endereco\Shopware6Client\Entity\CustomerAddress\CustomerAddressExtension;
 use Endereco\Shopware6Client\Entity\EnderecoAddressExtension\CustomerAddress\EnderecoCustomerAddressExtensionCollection;
 use Endereco\Shopware6Client\Entity\EnderecoAddressExtension\CustomerAddress\EnderecoCustomerAddressExtensionEntity;
 use Endereco\Shopware6Client\Service\AddressIntegrity\CustomerAddress\IntegrityInsurance;
+use Endereco\Shopware6Client\Service\ProcessContextService;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerCollection;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
@@ -27,19 +28,25 @@ final class PayPalExpressFlagIsSetInsurance implements IntegrityInsurance
     private EntityRepository $addressExtensionRepository;
     private RequestStack $requestStack;
 
+    private ProcessContextService $processContext;
+
     /**
      * @param EntityRepository<CustomerCollection> $customerRepository Repository to fetch customer data
      * @param EntityRepository<EnderecoCustomerAddressExtensionCollection> $addressExtensionRepository Repository to
      *        manage address extension data
+     * @param RequestStack $requestStack
+     * @param ProcessContextService $processContext
      */
     public function __construct(
         EntityRepository $customerRepository,
         EntityRepository $addressExtensionRepository,
-        RequestStack $requestStack
+        RequestStack $requestStack,
+        ProcessContextService $processContext
     ) {
         $this->customerRepository = $customerRepository;
         $this->addressExtensionRepository = $addressExtensionRepository;
         $this->requestStack = $requestStack;
+        $this->processContext = $processContext;
     }
 
     /**
@@ -108,6 +115,10 @@ final class PayPalExpressFlagIsSetInsurance implements IntegrityInsurance
         $customerCustomFields = $customer->getCustomFields();
         if (isset($customerCustomFields['payPalExpressPayerId'])) {
             return true;
+        }
+
+        if (!$this->processContext->isStorefront()) {
+            return false;
         }
 
         if ($this->requestStack->getMainRequest() === null) {
