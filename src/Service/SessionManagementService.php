@@ -40,8 +40,9 @@ class SessionManagementService
         $this->payloadPreparator = $payloadPreparator;
         $this->logger = $logger;
 
-        if (!is_null($requestStack->getMainRequest())) {
-            $this->session = $requestStack->getMainRequest()->getSession();
+        $mainRequest = $requestStack->getMainRequest();
+        if (!is_null($mainRequest) && $mainRequest->hasSession(true)) {
+            $this->session = $mainRequest->getSession();
         } else {
             $this->session = null;
         }
