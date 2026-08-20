@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Endereco\Shopware6Client\Controller\Storefront;
 
 use Endereco\Shopware6Client\Service\ApiConfiguration\ApiConfigurationFetcherInterface;
+use Endereco\Shopware6Client\Service\Security\ConfigurableRateLimiterInterface;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\RateLimiter\Exception\RateLimitExceededException;
 use Shopware\Core\PlatformRequest;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,15 +39,21 @@ class EnderecoApiProxyController
     private HttpClientInterface $httpClient;
     private ApiConfigurationFetcherInterface $apiConfigurationFetcher;
     private LoggerInterface $logger;
+    private ConfigurableRateLimiterInterface $configurableRateLimiter;
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         HttpClientInterface $httpClient,
         ApiConfigurationFetcherInterface $apiConfigurationFetcher,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ConfigurableRateLimiterInterface $configurableRateLimiter,
+        SystemConfigService $systemConfigService
     ) {
         $this->httpClient = $httpClient;
         $this->apiConfigurationFetcher = $apiConfigurationFetcher;
         $this->logger = $logger;
+        $this->configurableRateLimiter = $configurableRateLimiter;
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
@@ -63,7 +72,34 @@ class EnderecoApiProxyController
             return new Response('Method not allowed', 405, ['Allow' => 'POST'] + self::ROBOTS_HEADER);
         }
 
+        $clientIp = $request->getClientIp() ?? 'unknown';
+        $salesChannelId = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID);
+
+        $rateLimitingActive = $this->systemConfigService->getBool(
+            'EnderecoShopware6Client.config.enderecoRateLimitingActive',
+            $salesChannelId
+        );
+
+        if ($rateLimitingActive) {
+            $ipRateLimit = $this->systemConfigService->getInt(
+                'EnderecoShopware6Client.config.enderecoPerIpLimit',
+                $salesChannelId
+            );
+
+            try {
+                $this->configurableRateLimiter->ensureAccepted(
+                    'endereco_per_ip',
+                    $clientIp,
+                    $ipRateLimit,
+                    '1 hour'
+                );
+            } catch (RateLimitExceededException $e) {
+                return $this->tooManyRequestsResponse($e);
+            }
+        }
+
         $content = $request->getContent();
+
         if (!$content) {
             return new Response('Request body is empty. We expect a valid JSON.', 400, self::ROBOTS_HEADER);
         }
@@ -74,8 +110,6 @@ class EnderecoApiProxyController
         } catch (\JsonException) {
             return new Response('Invalid JSON format in request body.', 400, self::ROBOTS_HEADER);
         }
-
-        $salesChannelId = $request->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_ID);
 
         try {
             $apiConfiguration = $this->apiConfigurationFetcher->fetchConfiguration($salesChannelId);
@@ -147,5 +181,17 @@ class EnderecoApiProxyController
                 ['Content-Type' => 'application/json'] + self::ROBOTS_HEADER
             );
         }
+    }
+
+    private function tooManyRequestsResponse(RateLimitExceededException $e): Response
+    {
+        return new Response(
+            '{"error":"Too many requests"}',
+            429,
+            [
+                'Content-Type' => 'application/json',
+                'Retry-After' => (string) $e->getWaitTime(),
+            ] + self::ROBOTS_HEADER
+        );
     }
 }
