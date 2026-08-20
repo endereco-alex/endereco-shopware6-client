@@ -708,4 +708,26 @@
             </helpText>
         </input-field>
     </card>
+    <card>
+        <title>Rate Limiting</title>
+        <title lang="de-DE">Rate Limiting</title>
+
+        <input-field type="bool">
+            <name>enderecoRateLimitingActive</name>
+            <label>Enable rate limiting</label>
+            <label lang="de-DE">Rate Limiting aktivieren</label>
+            <helpText>If disabled, none of the limits below are enforced on the Endereco proxy endpoint.</helpText>
+            <helpText lang="de-DE">Ist diese Einstellung deaktiviert, werden die folgenden Limits am Endereco-Proxy-Endpunkt nicht geprüft.</helpText>
+            <defaultValue>false</defaultValue>
+        </input-field>
+
+        <input-field type="int">
+            <name>enderecoPerIpLimit</name>
+            <label>Max. requests per IP per hour</label>
+            <label lang="de-DE">Max. Anfragen pro IP und Stunde</label>
+            <helpText>Maximum number of requests to the Endereco proxy endpoint allowed from a single IP address per hour.</helpText>
+            <helpText lang="de-DE">Maximale Anzahl an Anfragen an den Endereco-Proxy-Endpunkt pro IP-Adresse und Stunde.</helpText>
+            <defaultValue>100</defaultValue>
+        </input-field>
+    </card>
 </config>
