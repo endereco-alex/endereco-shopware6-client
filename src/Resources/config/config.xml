@@ -729,5 +729,22 @@
             <helpText lang="de-DE">Maximale Anzahl an Anfragen an den Endereco-Proxy-Endpunkt pro IP-Adresse und Stunde.</helpText>
             <defaultValue>100</defaultValue>
         </input-field>
+
+        <input-field type="int">
+            <name>enderecoGlobalLimit</name>
+            <label>Max. global requests per hour</label>
+            <label lang="de-DE">Max. globale Anfragen pro Stunde</label>
+            <helpText>
+                Maximum number of requests to the Endereco proxy endpoint allowed globally per hour.
+                This value is highly individual. If you need support to determine an adequate
+                limit, feel free to contact us at support@endereco.de.
+            </helpText>
+            <helpText lang="de-DE">
+                Maximale Anzahl an globalen Anfragen an den Endereco-Proxy-Endpunkt pro Stunde.
+                Dieser Wert ist sehr individuell. Wenn du Unterstützung benötigst, um ein angemessenes
+                Limit zu bestimmen, kontaktiere uns gerne unter support@endereco.de.
+            </helpText>
+            <defaultValue>5000</defaultValue>
+        </input-field>
     </card>
 </config>
