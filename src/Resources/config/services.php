@@ -17,6 +17,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $containerConfigurator->import(__DIR__ . '/services/service_customer_address_integrity.php');
     $containerConfigurator->import(__DIR__ . '/services/service_endereco_service.php');
     $containerConfigurator->import(__DIR__ . '/services/service_order_address_integrity.php');
+    $containerConfigurator->import(__DIR__ . '/services/service_security.php');
     $containerConfigurator->import(__DIR__ . '/services/subscriber.php');
     $containerConfigurator->import(__DIR__ . '/services/twig.php');
 };
