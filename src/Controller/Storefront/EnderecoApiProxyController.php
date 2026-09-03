@@ -86,11 +86,27 @@ class EnderecoApiProxyController
                 $salesChannelId
             );
 
+            $globalRateLimit = $this->systemConfigService->getInt(
+                'EnderecoShopware6Client.config.enderecoGlobalLimit',
+                $salesChannelId
+            );
+
             try {
                 $this->configurableRateLimiter->ensureAccepted(
                     'endereco_per_ip',
                     $clientIp,
                     $ipRateLimit,
+                    '1 hour'
+                );
+            } catch (RateLimitExceededException $e) {
+                return $this->tooManyRequestsResponse($e);
+            }
+
+            try {
+                $this->configurableRateLimiter->ensureAccepted(
+                    'endereco_global_rate_limit',
+                    'global_rate_limit',
+                    $globalRateLimit,
                     '1 hour'
                 );
             } catch (RateLimitExceededException $e) {
